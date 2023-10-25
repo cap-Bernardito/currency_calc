@@ -1,0 +1,7 @@
+# IDE folders
+.idea
+.vscode
+*.iml
+
+# dependencies
+node_modules

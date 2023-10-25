@@ -1,0 +1,48 @@
+.root {
+  background: #eee;
+  border: 1px solid #222;
+  color: #333;
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  margin-bottom: 40px;
+
+  &__title {
+    flex: 1 1 50px;
+    font-size: 30px;
+  }
+
+  &__moneytype {
+    flex: 1 1 50px;
+  }
+}
+
+.row {
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+
+  &__item {
+    flex: 1 1 50px;
+  }
+}
+
+.info {
+  font-size: 14px;
+}
+
+.switcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  &__btn {
+    transform: rotate(90deg);
+  }
+}
