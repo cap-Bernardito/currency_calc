@@ -14,6 +14,8 @@ import SyncAltIcon from "@mui/icons-material/SyncAlt";
 
 import { Actions, CurrencyUnion, StateSchema } from "../../types/types";
 
+import { convertedData } from "../../data/data";
+
 import css from "./form.module.scss";
 
 const numRegex = /^[1-9]{1}[0-9]{0,6}[.]?[0-9]{0,2}$/;
@@ -32,6 +34,10 @@ const getValidNumber = (value: string, prevValue: string) => {
     return value;
   }
 
+  if (value.length === 1) {
+    return value;
+  }
+
   if (numRegex.test(value)) {
     return value;
   }
@@ -44,60 +50,83 @@ const initialState: StateSchema = {
   currencyWant: "EUR",
   availableCount: "0.00",
   wantCount: "0.00",
-  currencies: {
-    RUB: {
-      USD: {
-        code: "USD",
-        rate: 0.010694553171457,
-      },
-      EUR: {
-        code: "EUR",
-        rate: 0.010053096561203,
-      },
-    },
-    USD: {
-      EUR: {
-        code: "EUR",
-        rate: 0.94002025143366,
-      },
-      RUB: {
-        code: "RUB",
-        rate: 93.505542865405,
-      },
-    },
-    EUR: {
-      USD: {
-        code: "USD",
-        rate: 1.0638068684955,
-      },
-      RUB: {
-        code: "RUB",
-        rate: 99.471838742619,
-      },
-    },
-  },
+  currencies: convertedData,
 };
 
-const calc = (data: StateSchema, multiplier: number) => {
-  const {
-    currencies,
-    currencyAvailable: currencyAvailable,
-    currencyWant: currencyWant,
-  } = data;
-  const rate = Number(currencies[currencyAvailable][currencyWant]!.rate);
+const rubToСurrency = (
+  data: StateSchema,
+  multiplier: number,
+  isInverse = false,
+) => {
+  // Рубли в валюту (RUB -> USD) считаем по цене price_purchase
+  // const countRUB = 100;
+  // const countUSD = countRUB / state.USD.price_purchase
+  const { currencies, currencyWant } = data;
+  const price = Number(currencies[currencyWant].price_purchase);
 
-  return (rate * multiplier).toFixed(2);
+  return isInverse
+    ? (multiplier * price).toFixed(2)
+    : (multiplier / price).toFixed(2);
 };
 
-const calcInverse = (data: StateSchema, multiplier: number) => {
-  const {
-    currencies,
-    currencyAvailable: currencyAvailable,
-    currencyWant: currencyWant,
-  } = data;
-  const rate = Number(currencies[currencyAvailable][currencyWant]!.rate);
+const currencyToRub = (
+  data: StateSchema,
+  multiplier: number,
+  isInverse = false,
+) => {
+  // Валюта в рубли (USD -> RUB) считаем по цене price_pay
+  // const countUSD = 10;
+  // const countRUB = countUSD * state.USD.price_pay
+  const { currencies, currencyAvailable } = data;
+  const price = Number(currencies[currencyAvailable].price_pay);
 
-  return (multiplier / rate).toFixed(2);
+  return isInverse
+    ? (multiplier / price).toFixed(2)
+    : (multiplier * price).toFixed(2);
+};
+
+const currencyToСurrency = (
+  data: StateSchema,
+  multiplier: number,
+  isInverse = false,
+) => {
+  // Валюта в валюту - сначала валюту в рубли по цене price_pay, потом рубли в валюту по цене price_purchase
+  // const countUSD = 10;
+  // const countEUR = countUSD * state.USD.price_pay / state.EUR.price_purchase
+  const { currencies, currencyAvailable, currencyWant } = data;
+
+  if (!isInverse) {
+    const price_pay = Number(currencies[currencyAvailable].price_pay);
+    const price_purchase = Number(currencies[currencyWant].price_purchase);
+    const priceRub = multiplier * price_pay;
+
+    return (priceRub / price_purchase).toFixed(2);
+  }
+
+  const price_pay = Number(currencies[currencyWant].price_pay);
+  const price_purchase = Number(currencies[currencyAvailable].price_purchase);
+  const priceRub = multiplier * price_pay;
+
+  return (priceRub / price_purchase).toFixed(2);
+};
+
+const getCalculator = (state: StateSchema) => {
+  const fromIsRub = state.currencyAvailable === "RUB";
+  const toIsRub = state.currencyWant === "RUB";
+
+  if (fromIsRub) {
+    console.log("Calc: rubToСurrency");
+
+    return rubToСurrency;
+  }
+
+  if (toIsRub) {
+    console.log("Calc: currencyToRub");
+    return currencyToRub;
+  }
+
+  console.log("Calc: currencyToСurrency");
+  return currencyToСurrency;
 };
 
 const reducer: Reducer<StateSchema, Actions> = (state, action) => {
@@ -113,6 +142,10 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
         currencyWant: currencyAvailable,
       };
 
+      const calc = getCalculator(newState);
+
+      newState.wantCount = calc(newState, Number(newState.availableCount));
+
       return newState;
     }
 
@@ -121,6 +154,8 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
         ...state,
         currencyAvailable: action.payload,
       };
+
+      const calc = getCalculator(newState);
 
       newState.wantCount = calc(newState, Number(newState.availableCount));
 
@@ -132,6 +167,8 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
         currencyWant: action.payload,
       };
 
+      const calc = getCalculator(newState);
+
       newState.wantCount = calc(newState, Number(newState.availableCount));
 
       return newState;
@@ -141,6 +178,8 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
         ...state,
         availableCount: action.payload,
       };
+
+      const calc = getCalculator(newState);
 
       newState.wantCount = calc(newState, Number(action.payload));
 
@@ -152,7 +191,9 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
         wantCount: action.payload,
       };
 
-      newState.availableCount = calcInverse(newState, Number(action.payload));
+      const calc = getCalculator(newState);
+
+      newState.availableCount = calc(newState, Number(action.payload), true);
 
       return newState;
     }

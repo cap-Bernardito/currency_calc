@@ -6,7 +6,8 @@ export type CurrencyUnion = TupleToUnion<Currencies>;
 
 export type FromToData = {
   code: CurrencyUnion;
-  rate: number;
+  price_pay: number;
+  price_purchase: number;
 };
 
 export type FromToAllData = Record<CurrencyUnion, FromToData>;
@@ -16,7 +17,7 @@ export type StateSchema = {
   currencyWant: CurrencyUnion;
   availableCount: string;
   wantCount: string;
-  currencies: Record<CurrencyUnion, Partial<FromToAllData>>;
+  currencies: FromToAllData;
 };
 
 // Actions
