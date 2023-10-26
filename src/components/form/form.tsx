@@ -14,8 +14,6 @@ import SyncAltIcon from "@mui/icons-material/SyncAlt";
 
 import { Actions, CurrencyUnion, StateSchema } from "../../types/types";
 
-import { convertedData } from "../../data/data";
-
 import css from "./form.module.scss";
 
 const numRegex = /^[1-9]{1}[0-9]{0,6}[.]?[0-9]{0,2}$/;
@@ -43,14 +41,6 @@ const getValidNumber = (value: string, prevValue: string) => {
   }
 
   return prevValue;
-};
-
-const initialState: StateSchema = {
-  currencyAvailable: "USD",
-  currencyWant: "EUR",
-  availableCount: "0.00",
-  wantCount: "0.00",
-  currencies: convertedData,
 };
 
 const rubToСurrency = (
@@ -202,7 +192,9 @@ const reducer: Reducer<StateSchema, Actions> = (state, action) => {
   }
 };
 
-export const Form = () => {
+export const Form: React.FC<{ initialState: StateSchema }> = ({
+  initialState,
+}) => {
   const [state, dispatch] = useReducer<
     Reducer<StateSchema, Actions>,
     StateSchema
@@ -284,12 +276,17 @@ export const Form = () => {
   );
 
   return (
-    <form className={css.root}>
+    <form className={css.root} aria-label="Конвертировать валюту">
       <div className={css["header"]}>
         <div className={css["header__title"]}>Калькулятор</div>
         <div className={css["header__moneytype"]}>
           <FormControl fullWidth>
-            <Select id="money" value={"Наличные"} onChange={handleChangeMoney}>
+            <Select
+              id="money"
+              value={"Наличные"}
+              onChange={handleChangeMoney}
+              data-testid="money"
+            >
               <MenuItem value="Наличные">Наличные</MenuItem>
               <MenuItem value="Безналичные">Безналичные</MenuItem>
               <MenuItem value="Мобильный банк">Мобильный банк</MenuItem>
@@ -310,6 +307,7 @@ export const Form = () => {
         <div className={css["row__item"]}>
           <FormControl fullWidth>
             <Select
+              data-testid="available"
               id="available"
               value={state.currencyAvailable}
               onChange={handleChangeAvailable}
@@ -337,6 +335,7 @@ export const Form = () => {
         <div className={css["row__item"]}>
           <FormControl fullWidth>
             <Select
+              data-testid="want"
               id="want"
               value={state.currencyWant}
               onChange={handleChangeWant}

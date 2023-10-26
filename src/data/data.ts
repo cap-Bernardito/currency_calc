@@ -9,12 +9,12 @@ const data = [
   {
     code: "USD",
     price_pay: 90,
-    price_purchase: 94.3,
+    price_purchase: 95,
   },
   {
     code: "EUR",
-    price_pay: 94,
-    price_purchase: 99.9,
+    price_pay: 100,
+    price_purchase: 110,
   },
 ];
 
