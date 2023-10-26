@@ -16,24 +16,15 @@ import { Actions, CurrencyUnion, StateSchema } from "../../types/types";
 
 import css from "./form.module.scss";
 
-const numRegex = /^[1-9]{1}[0-9]{0,6}[.]?[0-9]{0,2}$/;
+const numRegex = /^0$|^0[.][0-9]{0,2}$|^[1-9]{1}[0-9]{0,6}[.]?[0-9]{0,2}$/;
 
 const getValidNumber = (value: string, prevValue: string) => {
-  if (/^0\.00/.test(value)) {
-    return value.replace(/^0\.00/, "");
-  }
-
-  // 0.xx, 0.x
-  if (/^[0]{1}[.][0-9]{0,2}$/.test(value)) {
-    return value;
-  }
-
   if (value.length === 0) {
-    return value;
+    return "";
   }
 
-  if (value.length === 1) {
-    return value;
+  if (/^0[0-9]/.test(value)) {
+    return value.replace(/^0/, "");
   }
 
   if (numRegex.test(value)) {
@@ -300,7 +291,7 @@ export const Form: React.FC<{ initialState: StateSchema }> = ({
             id="available_count"
             label="У меня есть"
             variant="outlined"
-            value={state.availableCount || "0.00"}
+            value={state.availableCount}
             onChange={handleChangeAvailableCount}
           />
         </div>
@@ -328,7 +319,7 @@ export const Form: React.FC<{ initialState: StateSchema }> = ({
             id="want_count"
             label="Хочу купить"
             variant="outlined"
-            value={state.wantCount || "0.00"}
+            value={state.wantCount}
             onChange={handleChangeWantCount}
           />
         </div>

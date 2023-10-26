@@ -6,8 +6,8 @@ import { StateSchema } from "./types/types";
 const initialState: StateSchema = {
   currencyAvailable: "USD",
   currencyWant: "EUR",
-  availableCount: "0.00",
-  wantCount: "0.00",
+  availableCount: "0",
+  wantCount: "0",
   currencies: convertedData,
 };
 

@@ -11,8 +11,8 @@ describe("Калькулятор", () => {
     const initialState: StateSchema = {
       currencyAvailable: "USD",
       currencyWant: "EUR",
-      availableCount: "0.00",
-      wantCount: "0.00",
+      availableCount: "0",
+      wantCount: "0",
       currencies: {
         RUB: { code: "RUB", price_pay: 1, price_purchase: 1 },
         USD: { code: "USD", price_pay: 90, price_purchase: 95 },
