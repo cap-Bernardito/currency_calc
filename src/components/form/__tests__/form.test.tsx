@@ -2,8 +2,8 @@ import { screen, within, render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
-import { Form } from "../form";
-import { StateSchema } from "../../types/types";
+import { Form } from "../ui/form";
+import { StateSchema } from "../model/types";
 
 describe("Калькулятор", () => {
   const setup = (preState: Partial<StateSchema> = {}) => {

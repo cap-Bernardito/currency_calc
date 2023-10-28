@@ -1,7 +1,7 @@
 import "./App.css";
 import { Form } from "./components/form";
 import { convertedData } from "./data/data";
-import { StateSchema } from "./types/types";
+import { StateSchema } from "./components/form/model/types";
 
 const initialState: StateSchema = {
   currencyAvailable: "USD",

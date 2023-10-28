@@ -1,34 +1,38 @@
-type TupleToUnion<T extends unknown[]> = T[number];
-
 export type Currencies = ["USD", "RUB", "EUR"];
 
-export type CurrencyUnion = TupleToUnion<Currencies>;
+export type CurrenciesUnion = Currencies[number];
 
-export type FromToData = {
-  code: CurrencyUnion;
+export type CurrencyDTO = {
+  code: CurrenciesUnion;
   price_pay: number;
   price_purchase: number;
 };
 
-export type FromToAllData = Record<CurrencyUnion, FromToData>;
+type MapCurrensiesDTO<T extends CurrencyDTO[]> = {
+  [P in T[number]["code"]]: {
+    code: P;
+    price_pay: number;
+    price_purchase: number;
+  };
+};
 
 export type StateSchema = {
-  currencyAvailable: CurrencyUnion;
-  currencyWant: CurrencyUnion;
+  currencyAvailable: CurrenciesUnion;
+  currencyWant: CurrenciesUnion;
   availableCount: string;
   wantCount: string;
-  currencies: FromToAllData;
+  currencies: MapCurrensiesDTO<CurrencyDTO[]>;
 };
 
 // Actions
 type CurrencyAvailableAction = {
   type: "currencyAvailable";
-  payload: CurrencyUnion;
+  payload: CurrenciesUnion;
 };
 
 type CurrencyWantAction = {
   type: "currencyWant";
-  payload: CurrencyUnion;
+  payload: CurrenciesUnion;
 };
 
 type AvailableCount = {

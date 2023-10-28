@@ -1,6 +1,6 @@
-import { StateSchema } from "../types/types";
+import { StateSchema, CurrencyDTO } from "../components/form";
 
-const data = [
+const data: CurrencyDTO[] = [
   {
     code: "RUB",
     price_pay: 1,
@@ -18,15 +18,9 @@ const data = [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-export const convertedData: StateSchema["currencies"] = data.reduce(
+export const convertedData = data.reduce(
   (acc, item) => {
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    acc[item.code] = item;
-
-    return acc;
+    return { ...acc, [item.code]: item };
   },
-  {},
+  {} as StateSchema["currencies"],
 );
